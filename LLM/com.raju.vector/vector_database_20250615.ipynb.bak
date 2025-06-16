@@ -97,7 +97,7 @@
     "import openai\n",
     " \n",
     "# OpenAI API Key (Replace with yours)\n",
-    "openai.api_key = \"sk-proj""
+    "openai.api_key = \"test""
    ]
   },
   {

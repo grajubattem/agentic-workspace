@@ -5,7 +5,7 @@
 import numpy as np
 import openai
 # OpenAI API Key (Replace with yours)
-#openai.api_key = 'test'
+#openai.api_key =
 
 from dotenv import load_dotenv
  
