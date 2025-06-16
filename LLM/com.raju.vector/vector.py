@@ -5,7 +5,7 @@
 import numpy as np
 import openai
 # OpenAI API Key (Replace with yours)
-#openai.api_key = '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'
+#openai.api_key = 'sk-proj-'
 
 from dotenv import load_dotenv
  

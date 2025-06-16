@@ -97,7 +97,7 @@
     "import openai\n",
     " \n",
     "# OpenAI API Key (Replace with yours)\n",
-    "openai.api_key = \"sk-proj""
+    "openai.api_key = \"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\""
    ]
   },
   {
