@@ -1,0 +1,29 @@
+       +-------------------------+
+       |   Client / Frontend    |
+       |  (e.g. Postman, App)   |
+       +----------+-------------+
+                  |
+          HTTP POST /generate-intent
+                  |
+       +----------v-------------+
+       |      FastAPI App       |
+       |   /generate-intent     |
+       +----------+-------------+
+                  |
+          Create prompt using
+        customer input message
+                  |
+       +----------v-------------+
+       |   Gemini (LLM)     |
+       |   via google-generativeai
+       +----------+-------------+
+                  |
+       Extract response text:
+       "customer: ...", 
+	   "representative: ..."
+                  |
+       +----------v-------------+
+       |   Format JSON Output   |
+       +----------+-------------+
+                  |
+             HTTP Response
