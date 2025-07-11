@@ -1,0 +1,89 @@
+{
+	"info": {
+		"_postman_id": "d34f65e0-a281-4598-83ae-b18d0a0283ec",
+		"name": "ccai-messages-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "521101"
+	},
+	"item": [
+		{
+			"name": "ccai-save-messages",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n  \"msg_key\": \"message1\",\r\n  \"msg_value\": \"Customer contacted regarding if they could still get a free watch that was offered when they signed up for Verizon.,Checked if the customer could still get the free watch.\"\r\n    },\r\n    {\r\n    \"msg_key\": \"message2\",\r\n    \"msg_value\": \"Customer contacted regarding the status of gift cards for switching phone service.,Provided the status of the gift cards and guided the customer to locate them in their email.\"\r\n    },\r\n    {\r\n    \"msg_key\": \"message3\",\r\n    \"msg_value\": \"Customer contacted regarding fluctuating bill and requested a flat rate.,Requested additional credits to be applied to the customer's account and a flat rate for the billing.\"\r\n    },\r\n    {\r\n    \"msg_key\": \"message4\",\r\n    \"msg_value\": \"Customer contacted regarding if they could still get a free watch that was offered when they signed up for Verizon.,Checked if the customer could still get the free watch.\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/ccai/store",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"ccai",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ccai-get-message",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/ccai/retrieve/message",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"ccai",
+						"retrieve",
+						"message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ccai-get-all-messages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/ccai/allmessages",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"ccai",
+						"allmessages"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

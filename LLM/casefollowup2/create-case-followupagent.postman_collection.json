@@ -1,0 +1,39 @@
+{
+	"info": {
+		"_postman_id": "ae92d0b0-8061-4a49-b34e-fd2b19c54539",
+		"name": "create-case-followupagent",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "521101"
+	},
+	"item": [
+		{
+			"name": "case-followup-agent-run",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"message\": \"Customer contacted regarding if they could still get a free watch that was offered when they signed up for Verizon. Checked if the customer could still get the free watch.\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/case-followup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"case-followup"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
