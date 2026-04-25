@@ -1,0 +1,18 @@
+# Shared requirements for all three framework skeletons (no actual LLM logic is invoked)
+python-dotenv>=1.0.1
+rich>=13.7.1
+typer>=0.12.3
+pydantic>=2.7.0
+
+# Agents SDK (OpenAI Python SDK)
+openai>=1.40.0
+
+# LangChain
+langchain>=0.2.10
+langchain-community>=0.2.10
+
+# LangGraph
+langgraph>=0.2.3
+
+# CrewAI
+crewai>=0.50.0
