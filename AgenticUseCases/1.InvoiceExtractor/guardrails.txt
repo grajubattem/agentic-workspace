@@ -1,0 +1,59 @@
+INVOICE EXTRACTION GUARDRAILS
+
+Apply these rules while generating the JSON output. The document is the only source of truth.
+
+Scenario: Valid values
+Example: Total = 1,240
+Expected behavior: Extract the value correctly.
+
+Scenario: Missing value
+Example: No tax mentioned
+Expected behavior: Return tax as null. Never guess or calculate it.
+
+Scenario: Incorrect value in document
+Example: Subtotal = 1,000 but total shown as 900
+Expected behavior: Extract the values exactly as shown. Optionally flag the inconsistency in _confidence.
+
+Scenario: Incorrect date
+Example: Date = 15/15/2024
+Expected behavior: Return invoice_date as null because the date is invalid. Do not repair or guess it.
+
+Scenario: Unambiguous written date
+Example: Date = 15 Mar 2024
+Expected behavior: Return invoice_date as 2024-03-15.
+
+Scenario: Currency variation
+Example: $1,240, 1,240, EUR 1,240
+Expected behavior: Identify the explicitly shown currency and extract the amount correctly.
+
+Scenario: Currency not present
+Example: Amounts are shown without a currency symbol or currency code
+Expected behavior: Return JSON null for currency, never the strings "None", "none", "null", or "N/A", and add "currency:absent" to _confidence. Never infer currency from the vendor, location, filename, or number format.
+
+Scenario: Currency mismatch
+Example: Subtotal = 1,000 but total = $1,240
+Expected behavior: Extract both values and flag the currency inconsistency in _confidence.
+
+Scenario: Calculated mismatch
+Example: Subtotal 1,000 + Tax 180, but Total 1,250
+Expected behavior: Extract all shown values and flag the calculation inconsistency in _confidence. Never replace the shown total with a calculated value.
+
+Scenario: Duplicate fields
+Example: The invoice contains Total, Grand Total, and Amount Payable
+Expected behavior: Use the required total represented by the document's final payable total. Do not arbitrarily overwrite it with an intermediate amount; flag genuine ambiguity in _confidence.
+
+Scenario: Optional field missing
+Example: Payment terms not mentioned
+Expected behavior: Return payment_terms as null.
+
+Scenario: Different invoice layout
+Example: Vendor uses a completely different format
+Expected behavior: Extract the standard fields wherever they are explicitly present, regardless of layout.
+
+Scenario: Negative or zero value
+Example: Discount = 0 or amount = -100
+Expected behavior: Preserve explicit zero and negative amounts as numeric values. Do not change their sign. Only extract fields in the required schema.
+
+Scenario: Ambiguous number
+Example: 1,240.50 versus 1.240,50
+Expected behavior: Interpret separators using the document's explicit locale or consistent number format. If the format remains ambiguous, return the affected amount as null and flag ambiguity in _confidence.
