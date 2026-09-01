@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -15,4 +13,3 @@ class InvoiceData(BaseModel):
     total: float | None = None
     payment_terms: str | None = None
     currency: str | None = None
-    confidence: dict[str, Any] = Field(default_factory=dict, alias="_confidence")

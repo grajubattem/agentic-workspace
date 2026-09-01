@@ -1,0 +1,27 @@
+Upload file
+   ↓
+Read image, PDF, or text content
+   ↓
+Send document to Ollama through LangChain
+   ↓
+Apply zero-shot system and user prompts
+   ↓
+Self-verify extracted values
+   ↓
+Validate JSON with Pydantic
+   ↓
+Display fields and download JSON
+
+######################Frontend#######################
+Streamlit
+Provides file upload
+Displays extracted invoice fields
+Shows JSON output
+Provides JSON download
+Main file: streamlit_app.py
+######################Backend#######################
+FastAPI: Receives uploaded files
+LangChain: Connects the backend to the AI model
+Ollama: Runs the local gemma3:4b model
+Pydantic: Validates the extracted JSON
+PyPDF: Reads text from PDF files

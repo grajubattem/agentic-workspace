@@ -47,9 +47,6 @@ def normalize_invoice_date(extracted: dict) -> None:
         except ValueError:
             continue
     extracted["invoice_date"] = None
-    confidence = extracted.setdefault("_confidence", {})
-    if isinstance(confidence, dict):
-        confidence.setdefault("invoice_date", "invalid_or_ambiguous")
 
 
 def extract_invoice(document: str, image_bytes: bytes | None = None) -> dict:
@@ -69,10 +66,6 @@ def extract_invoice(document: str, image_bytes: bytes | None = None) -> dict:
         content.append({"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + base64.b64encode(image_bytes).decode()}})
     response = model.invoke([SystemMessage(content=system_prompt), HumanMessage(content=content)])
     extracted = normalize_null_values(extract_json(response.content))
-    if isinstance(extracted, dict) and extracted.get("currency") is None:
-        confidence = extracted.setdefault("_confidence", {})
-        if isinstance(confidence, dict):
-            confidence.setdefault("currency", "absent")
     if isinstance(extracted, dict):
         normalize_invoice_date(extracted)
-    return InvoiceData.model_validate(extracted).model_dump(by_alias=True)
+    return InvoiceData.model_validate(extracted).model_dump()

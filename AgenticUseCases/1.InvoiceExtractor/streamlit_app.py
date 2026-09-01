@@ -17,9 +17,8 @@ if uploaded and st.button("Extract JSON", type="primary"):
             result.raise_for_status()
             payload = result.json()
             field_rows = [
-                {"field": field, "value": value}
+                {"field": field, "value": "null" if value is None else value}
                 for field, value in payload.items()
-                if field != "_confidence"
             ]
             st.dataframe(field_rows, hide_index=True, width="stretch")
             with st.expander("View JSON"):

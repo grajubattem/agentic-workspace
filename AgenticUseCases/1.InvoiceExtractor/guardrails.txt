@@ -12,7 +12,7 @@ Expected behavior: Return tax as null. Never guess or calculate it.
 
 Scenario: Incorrect value in document
 Example: Subtotal = 1,000 but total shown as 900
-Expected behavior: Extract the values exactly as shown. Optionally flag the inconsistency in _confidence.
+Expected behavior: Extract the values exactly as shown. Do not calculate or replace either value.
 
 Scenario: Incorrect date
 Example: Date = 15/15/2024
@@ -28,19 +28,19 @@ Expected behavior: Identify the explicitly shown currency and extract the amount
 
 Scenario: Currency not present
 Example: Amounts are shown without a currency symbol or currency code
-Expected behavior: Return JSON null for currency, never the strings "None", "none", "null", or "N/A", and add "currency:absent" to _confidence. Never infer currency from the vendor, location, filename, or number format.
+Expected behavior: Return JSON null for currency, never the strings "None", "none", "null", "N/A", or "absent". Never infer currency from the vendor, location, filename, or number format.
 
 Scenario: Currency mismatch
 Example: Subtotal = 1,000 but total = $1,240
-Expected behavior: Extract both values and flag the currency inconsistency in _confidence.
+Expected behavior: Extract both values as shown without changing either value.
 
 Scenario: Calculated mismatch
 Example: Subtotal 1,000 + Tax 180, but Total 1,250
-Expected behavior: Extract all shown values and flag the calculation inconsistency in _confidence. Never replace the shown total with a calculated value.
+Expected behavior: Extract all shown values without changing them. Never replace the shown total with a calculated value.
 
 Scenario: Duplicate fields
 Example: The invoice contains Total, Grand Total, and Amount Payable
-Expected behavior: Use the required total represented by the document's final payable total. Do not arbitrarily overwrite it with an intermediate amount; flag genuine ambiguity in _confidence.
+Expected behavior: Use the required total represented by the document's final payable total. Do not arbitrarily overwrite it with an intermediate amount.
 
 Scenario: Optional field missing
 Example: Payment terms not mentioned
@@ -56,4 +56,4 @@ Expected behavior: Preserve explicit zero and negative amounts as numeric values
 
 Scenario: Ambiguous number
 Example: 1,240.50 versus 1.240,50
-Expected behavior: Interpret separators using the document's explicit locale or consistent number format. If the format remains ambiguous, return the affected amount as null and flag ambiguity in _confidence.
+Expected behavior: Interpret separators using the document's explicit locale or consistent number format. If the format remains ambiguous, return the affected amount as null.
