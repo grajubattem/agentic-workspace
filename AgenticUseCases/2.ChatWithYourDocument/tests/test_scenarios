@@ -1,0 +1,5 @@
+User_Prompt1: Ask something whose answer is clearly present in the document
+User_Prompt1_Response: Correct answer with relevant citation from vector store
+
+User_Prompt2: prmpt something not present in vector store or document store.
+User_Prompt2_Response: Should say it cannot find the answer; no hallucination
