@@ -13,7 +13,16 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from embeddingpipeline.embedding import get_embedding_model_config
-from ragpipeline.rag_pipeline import build_rag_chain
+from evaluation.ragas_judge import (
+    METRIC_DESCRIPTIONS,
+    METRIC_LABELS,
+    METRIC_ORDER,
+    format_score,
+    get_judge_config,
+    judge_enabled,
+)
+from ragpipeline.rag_pipeline import answer_with_quality_gate
+from ragpipeline.retrieval import get_vector_store
 
 
 st.set_page_config(
@@ -24,9 +33,9 @@ st.set_page_config(
 
 
 @st.cache_resource(show_spinner=False)
-def get_rag_chain(source_keys: tuple[str, ...], collection_name: str):
+def get_indexed_store(source_keys: tuple[str, ...], collection_name: str):
     source_paths = [Path(key) for key in source_keys]
-    return build_rag_chain(source_paths, collection_name=collection_name)
+    return get_vector_store(source_paths, collection_name=collection_name)
 
 
 def save_uploaded_files(uploaded_files) -> tuple[list[Path], str]:
@@ -51,9 +60,36 @@ def save_uploaded_files(uploaded_files) -> tuple[list[Path], str]:
     return saved_paths, collection_name
 
 
+def render_ragas_scores(scores) -> None:
+    st.subheader("RAGAS LLM-as-judge scores")
+    columns = st.columns(len(METRIC_ORDER))
+    for column, metric_name in zip(columns, METRIC_ORDER):
+        column.metric(
+            METRIC_LABELS[metric_name],
+            format_score(scores.scores.get(metric_name)),
+            help=METRIC_DESCRIPTIONS[metric_name],
+        )
+
+    if scores.reference_mode == "ground-truth":
+        st.caption("Context precision and recall were scored against the expected answer you provided.")
+    elif scores.reference_mode == "self-referenced":
+        st.caption(
+            "No expected answer was provided, so the generated answer was used as the reference "
+            "for context precision and recall. Add an expected answer for stricter scoring."
+        )
+    elif scores.reference_mode == "disabled":
+        st.caption("The RAGAS judge is turned off. Enable it in the sidebar to score this answer.")
+
+    for metric_name, message in scores.errors.items():
+        label = METRIC_LABELS.get(metric_name, metric_name.replace("_", " ").title())
+        st.warning(f"{label}: {message}")
+
+
 def main() -> None:
     st.title("Chat With Your Documents")
     st.caption("Upload documents, index them in Chroma, and ask questions through the RAG pipeline.")
+
+    default_judge_model, _, base_url, timeout = get_judge_config()
 
     with st.sidebar:
         st.subheader("Documents")
@@ -67,6 +103,16 @@ def main() -> None:
             for uploaded_file in uploaded_files:
                 st.caption(uploaded_file.name)
 
+        st.subheader("Quality gate")
+        run_ragas = st.toggle(
+            "Run RAGAS LLM-as-judge",
+            value=judge_enabled(),
+            help="Scores faithfulness, answer relevancy, context precision and context recall. Adds latency.",
+        )
+        judge_model = st.text_input("Judge model", value=default_judge_model)
+        st.caption(f"Judge endpoint: {base_url}")
+        st.caption(f"Judge timeout: {timeout}s")
+
     source_paths, collection_name = save_uploaded_files(uploaded_files)
     if not source_paths:
         st.info("Upload at least one PDF or Excel file to begin.")
@@ -77,7 +123,7 @@ def main() -> None:
 
     try:
         with st.spinner("Preparing the document index..."):
-            rag_chain, vector_store = get_rag_chain(source_keys, collection_name)
+            vector_store = get_indexed_store(source_keys, collection_name)
     except Exception as exc:
         st.error(f"Failed to build the document index: {exc}")
         st.stop()
@@ -92,6 +138,11 @@ def main() -> None:
         placeholder="Example: Which car has the highest price?",
         height=100,
     )
+    reference = st.text_area(
+        "Expected answer (optional)",
+        placeholder="Provide the ground-truth answer to score context precision and recall against it.",
+        height=68,
+    )
 
     if st.button("Generate answer", type="primary", use_container_width=True):
         if not question.strip():
@@ -99,19 +150,47 @@ def main() -> None:
             return
 
         try:
-            with st.spinner("Retrieving context and generating an answer..."):
-                answer = rag_chain.invoke(question)
-            st.subheader("Answer")
-            st.write(answer)
+            spinner_text = (
+                "Retrieving context, generating an answer and running the RAGAS judge..."
+                if run_ragas
+                else "Retrieving context and generating an answer..."
+            )
+            with st.spinner(spinner_text):
+                response = answer_with_quality_gate(
+                    question,
+                    [Path(key) for key in source_keys],
+                    collection_name=collection_name,
+                    reference=reference or None,
+                    run_ragas=run_ragas,
+                    judge_model=judge_model or None,
+                )
         except Exception as exc:
             st.error(f"Answer generation failed: {exc}")
             return
 
+        st.subheader("Answer")
+        st.write(response.answer)
+
+        render_ragas_scores(response.ragas)
+
+        if response.evaluation is not None:
+            st.caption(
+                f"Local checks — retrieval relevance: {response.evaluation.relevance_score:.3f}, "
+                f"groundedness: {response.evaluation.groundedness_score:.3f}"
+            )
+
         with st.expander("Retrieved sources"):
-            documents = vector_store.similarity_search(question, k=4)
-            for index, document in enumerate(documents, start=1):
+            for index, document in enumerate(response.documents, start=1):
                 source = document.metadata.get("source", "Unknown source")
-                st.markdown(f"**{index}. {source}**")
+                score = (
+                    response.relevance_scores[index - 1]
+                    if index - 1 < len(response.relevance_scores)
+                    else None
+                )
+                heading = f"**{index}. {source}**"
+                if score is not None:
+                    heading += f" — relevance {score:.3f}"
+                st.markdown(heading)
                 st.write(document.page_content)
 
 

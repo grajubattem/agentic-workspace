@@ -1,0 +1,14 @@
+[
+  {
+    "question": "What is the price of the Bugatti Chiron in 2025?",
+    "reference": "The Bugatti Chiron is priced at 3,000,000 USD in 2025."
+  },
+  {
+    "question": "How many Audi vehicles were sold in Q4 2025?",
+    "reference": "Audi sold 12 vehicles in Q4 2025."
+  },
+  {
+    "question": "How many total vehicles were sold across all quarters in 2025?",
+    "reference": "A total of 50 vehicles were sold across all quarters in 2025."
+  }
+]
