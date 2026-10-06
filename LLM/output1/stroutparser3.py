@@ -6,7 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 load_dotenv()
 
 
-model = ChatOpenAI()
+model = ChatOpenAI(model="gpt-5.6-terra")
 
 # 1st prompt -> detailed report
 template1 = PromptTemplate(

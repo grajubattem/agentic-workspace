@@ -10,7 +10,7 @@ from typing import Literal
 
 load_dotenv()
 
-model = ChatOpenAI()
+model = ChatOpenAI(model="gpt-5.6-terra")
 
 parser = StrOutputParser()
 

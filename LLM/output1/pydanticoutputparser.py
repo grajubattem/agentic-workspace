@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
 
 load_dotenv()
-model = ChatOpenAI()
+model = ChatOpenAI(model="gpt-5.6-terra")
 
 '''
 # Define the model
