@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
  
 load_dotenv()
  
-model = ChatOpenAI()
+model = ChatOpenAI(model="gpt-5.6-terra")
 
 # schema
 

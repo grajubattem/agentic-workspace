@@ -7,7 +7,7 @@ import os
 # Get the API key from the environment
 api_key = os.getenv("OPENAI_API_KEY")
 
-model = ChatOpenAI(api_key=api_key) 
+model = ChatOpenAI(api_key=api_key, model="gpt-5.6-terra")
 # schema 
 class Review(TypeDict): 
     key_themes: Annotated[list[str], "Write down all the key themes discussed in the review in a list"] 
